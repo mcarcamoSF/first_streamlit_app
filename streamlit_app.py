@@ -51,11 +51,21 @@ def get_fruit_load_list():
             return my_cur.fetchall()
 
 #Add a button to load the fruit
+
 if streamlit.button('Get Fruit Load List'):
-      my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-      my_data_rows = get_fruit_load_list()
-      my_cnx.close()
-      streamlit.dataframe(my_data_rows)
+    try:
+        my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+        my_data_rows = get_fruit_load_list()
+        my_cnx.close()
+        
+        if my_data_rows:
+            streamlit.dataframe(my_data_rows, columns=["Fruit", "Load Weight", "Date"])
+        else:
+            streamlit.write("No data available.")
+    except snowflake.connector.errors.OperationalError as e:
+        streamlit.error(f"Error connecting to Snowflake backend: {str(e)}")
+    except Exception as e:
+        streamlit.error(f"An error occurred: {str(e)}")
 
 
 #streamlit.stop()
