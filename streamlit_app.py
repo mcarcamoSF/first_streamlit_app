@@ -1,5 +1,3 @@
-pip install pyarrow==10.0.1
-
 import streamlit
 import pandas
 import requests
