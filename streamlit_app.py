@@ -3,6 +3,9 @@ import pandas
 import requests
 import snowflake.connector
 from urllib.error import URLError
+import retrying
+
+@retrying.retry(wait_fixed=2000, stop_max_attempt_number=3)
 
 streamlit.title('My Parents New Healthy Diner')
 streamlit.header('Breakfast Menu')
@@ -52,9 +55,6 @@ def get_fruit_load_list():
             return my_cur.fetchall()
 
 #Add a button to load the fruit
-import retrying
-
-@retrying.retry(wait_fixed=2000, stop_max_attempt_number=3)
 def connect_to_snowflake():
 if streamlit.button('Get Fruit Load List'):
     try:
