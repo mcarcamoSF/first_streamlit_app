@@ -3,7 +3,6 @@ import pandas
 import requests
 import snowflake.connector
 from urllib.error import URLError
-pip install snowflake-connector-python
 
 streamlit.title('My Parents New Healthy Diner')
 streamlit.header('Breakfast Menu')
@@ -42,10 +41,9 @@ try:
 except URLError as e:
   streamlit.error()
 
-#import snowflake.connector
+import snowflake.connector
 
 streamlit.header("The fruit load list contains:")
-
 #Snowflake-related functions:
 def get_fruit_load_list():
       with my_cnx.cursor() as my_cur:
@@ -53,28 +51,12 @@ def get_fruit_load_list():
             return my_cur.fetchall()
 
 #Add a button to load the fruit
-import retrying
-
-@retrying.retry(wait_fixed=2000, stop_max_attempt_number=3)
-def connect_to_snowflake():
-    try:
-        my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-        return my_cnx
-    except snowflake.connector.errors.OperationalError as e:
-        raise Exception(f"Error connecting to Snowflake backend: {str(e)}")
-
 if streamlit.button('Get Fruit Load List'):
-    try:
-        my_cnx = connect_to_snowflake()
-        my_data_rows = get_fruit_load_list()
-        my_cnx.close()
-        
-        if my_data_rows:
-            streamlit.dataframe(my_data_rows, columns=["Fruit", "Load Weight", "Date"])
-        else:
-            streamlit.write("No data available.")
-    except Exception as e:
-        streamlit.error(str(e))
+      my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+      my_data_rows = get_fruit_load_list()
+      my_cnx.close()
+      streamlit.dataframe(my_data_rows)
+
 
 #streamlit.stop()
 #Allow the end user to add to the list
