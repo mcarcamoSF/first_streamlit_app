@@ -5,8 +5,6 @@ import snowflake.connector
 from urllib.error import URLError
 import retrying
 
-@retrying.retry(wait_fixed=2000, stop_max_attempt_number=3)
-
 streamlit.title('My Parents New Healthy Diner')
 streamlit.header('Breakfast Menu')
 streamlit.text('🥣 Omega 3 & Blueberry Oatmeal')
@@ -55,10 +53,19 @@ def get_fruit_load_list():
             return my_cur.fetchall()
 
 #Add a button to load the fruit
+import retrying
+
+@retrying.retry(wait_fixed=2000, stop_max_attempt_number=3)
 def connect_to_snowflake():
-if streamlit.button('Get Fruit Load List'):
     try:
         my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+        return my_cnx
+    except snowflake.connector.errors.OperationalError as e:
+        raise Exception(f"Error connecting to Snowflake backend: {str(e)}")
+
+if streamlit.button('Get Fruit Load List'):
+    try:
+        my_cnx = connect_to_snowflake()
         my_data_rows = get_fruit_load_list()
         my_cnx.close()
         
@@ -66,11 +73,8 @@ if streamlit.button('Get Fruit Load List'):
             streamlit.dataframe(my_data_rows, columns=["Fruit", "Load Weight", "Date"])
         else:
             streamlit.write("No data available.")
-    except snowflake.connector.errors.OperationalError as e:
-        streamlit.error(f"Error connecting to Snowflake backend: {str(e)}")
     except Exception as e:
-        streamlit.error(f"An error occurred: {str(e)}")
-
+        streamlit.error(str(e))
 
 #streamlit.stop()
 #Allow the end user to add to the list
