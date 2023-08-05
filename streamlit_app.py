@@ -3,7 +3,7 @@ pip install pyarrow==10.0.1
 import streamlit
 import pandas
 import requests
-import snowflake.connector
+
 from urllib.error import URLError
 
 streamlit.title('My Mom\'s New Healthy Diner')
@@ -45,3 +45,4 @@ try:
 except URLError as e:
     streamlit.error()
 
+import snowflake.connector
