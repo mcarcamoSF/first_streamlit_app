@@ -1,7 +1,7 @@
 import streamlit
 import pandas
 import requests
-
+import snowflake.connector
 from urllib.error import URLError
 
 streamlit.title('My Mom\'s New Healthy Diner')
@@ -25,7 +25,7 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 # Display the table on the page
 streamlit.dataframe(fruits_to_show)
 
-import requests
+#import requests
 streamlit.header('Fruityvice Fruit Advice!')
 
 def get_fruityvice_data(this_fruit_choice):
@@ -42,8 +42,9 @@ try:
         streamlit.dataframe(back_from_function)
 except URLError as e:
     streamlit.error()
-
-import snowflake.connector
+#don't run anything
+streamlit.stop()
+#import snowflake.connector
 
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 my_cur = my_cnx.cursor()
